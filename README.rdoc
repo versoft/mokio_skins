@@ -34,7 +34,7 @@ d. Prepare skin packed with zip with the following structure:
 
 ­[ZIP] skin_name
 
-[FOLDER] skin_name
+[FOLDER] skin_name 
 
 ­-[FOLDER] templates – main skin templates (currently available formats: erb, haml, slim)
 
