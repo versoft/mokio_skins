@@ -1,0 +1,54 @@
+= f.input :name, :wrapper => :skin, :input_html => { :readonly => "readonly" }
+= f.input :active
+
+.row-fluid#skinfiles
+  hr
+  .span3.mainnav
+		ul
+			li.directory
+				a href="#"
+					span.icon16.icomoon-icon-file-xml
+					= "templates"
+				ul#templates.sub
+					- obj.templates.each do |template|
+						- cache [:mokio_skins, template] do
+							li
+								a href="#{template.id}"= template.name
+
+			li.directory
+				a href="#"
+					span.icon16.icomoon-icon-file-css
+					= "css"
+				ul#css.sub
+					- obj.styles.each do |style|
+						- cache [:mokio_skins, style] do
+							li
+								a href="#{style.id}"= style.name
+
+			li.directory
+				a href="#"
+					span.icon16.icomoon-icon-file
+					= "js"
+				ul#js.sub
+					- obj.javascripts.each do |js|
+						- cache [:mokio_skins, js] do
+							li
+								a href="#{js.id}"= js.name
+
+			li.directory
+				a href="#"
+					span.icon16.icomoon-icon-pictures
+					= "images"
+				ul#images.sub
+					- obj.images.each do |image|
+						- cache [:mokio_skins, image] do
+							li
+								a.fancybox id=image.id href="#{image.path.gsub(/\/public/, '')}"= image.name
+
+  .span8
+    textarea#filecode
+
+= render :partial => "/mokio/skins/hidden"
+
+- content_for :js do
+	= javascript_include_tag 'mokio_skins/application'

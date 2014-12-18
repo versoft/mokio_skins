@@ -1,0 +1,7 @@
+= form_for Mokio::SkinFile.new do |f|
+  .row-fluid.string 
+    = f.label :name, t("skin_files.name"), :class => "form-label span2"
+    = f.text_field :name, :class => "span10"
+  .row-fluid 
+    = f.label :type, t("skin_files.type"), :class => "form-label span2"
+    = f.select :skin, skin.dirs, {}, {:class => "span10"}

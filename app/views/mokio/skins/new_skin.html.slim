@@ -1,0 +1,69 @@
+= f.input :zip_file, :as => :file
+
+hr
+.row-fluid
+  .span6
+    .helpbox.zip_help
+      h4= t("skins.correct_structure")
+
+      .skin_name
+        span.icon16.icomoon-icon-folder
+        = t("skins.skin_name")
+      ul.main
+        li
+          span.icon16.icomoon-icon-folder
+          = "templates"
+          ul
+            - Mokio::SkinFile::STD_FILES.each do |name|
+              li
+                span.icon16.icomoon-icon-file-xml
+                span= "#{name}.html.erb"
+        - cache :mokio_skin_structure do
+          li
+            span.icon16.icomoon-icon-folder
+            = "js"
+            ul
+              li
+                span.icon16.icomoon-icon-file
+                span= "javascript.js"
+              li
+                span.icon16.icomoon-icon-file
+                span= "javascript2.js"
+          li
+            span.icon16.icomoon-icon-folder
+            = "css"
+            ul
+              li
+                span.icon16.icomoon-icon-file-css
+                span= "style.css"
+              li
+                span.icon16.icomoon-icon-file-css
+                span= "style2.css"      
+          li
+            span.icon16.icomoon-icon-folder
+            = "images"
+            ul
+              li
+                span.icon16.icomoon-icon-pictures
+                span= "picture.jpg"
+              li
+                span.icon16.icomoon-icon-pictures
+                span= "picture2.gif"
+              li
+                span.icon16.icomoon-icon-pictures
+                span= "picture3.png"
+  .span6
+    .helpbox.requirements
+      h4= t("skins.requirements")
+      ul.req
+        - Mokio::Skin::REQUIREMENTS.each do |name|
+          li
+            span.icon16.icon-exclamation-sign
+            span= t("skins.#{name}")
+
+- content_for :js do
+    javascript:
+      $(document).ready(function() {
+        $(".requirements").css("height", $(".zip_help").css("height"))
+        $(".zip_help").css("height", $(".zip_help").css("height"))
+      });

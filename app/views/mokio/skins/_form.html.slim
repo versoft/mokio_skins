@@ -1,0 +1,5 @@
+= render :template => "/mokio/skins/new_skin", locals:{f:f} if params[:action] == "new" || params[:action] == "create"
+= render :template => "/mokio/skins/edit_skin", locals:{f:f} if params[:action] == "edit"
+
+- content_for :head do
+  = stylesheet_link_tag 'mokio_skins/application'

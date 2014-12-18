@@ -1,0 +1,1022 @@
+# ======================================= #
+# Javascript handling skin edit.          #
+# Using CodeMirror plugin for code editor #
+# 2014, Adam Stomski                      #
+# ======================================= #
+$ ->
+  #
+  # flags
+  #
+  STATUS =
+    EMPTY:         null
+    DELETED:       0
+    OPENED:        1
+    NAME_CHANGED:  2
+    IMAGE_DELETED: 3
+
+  #
+  # keys
+  #
+  Key =
+    Enter: 13
+    Esc:   27
+
+  #
+  # predefined types
+  #
+  types =
+    erb:    "application/x-ejs"
+    haml:   "text/x-haml"
+    slim:   "application/x-slim"
+    css:    "text/css"
+    sass:   "text/x-scss"
+    coffee: "text/x-coffeescript"
+    js:     "text/javascript"
+
+  #
+  # predefined hints
+  #
+  hints =
+    html: "html-hint"
+    css:  "css-hint"
+    js:   "javascript-hint"
+
+  #
+  # predefined paths
+  #
+  paths =
+    root: ->
+      "/" + Mokio.engine_root() + "/skin_files/"
+    edit: (id) ->
+      this.root() + id + "/edit"
+    update: (id) ->
+      this.root() + id
+    create: ->
+      this.root()
+    new: ->
+      this.root() + "new"
+    delete: (id) ->
+      this.root() + id
+    change_name: (id) ->
+      this.root() + id + "/change_name"
+    add_image: ->
+      this.root() + "add_image?id=#{file.skin_id}"
+
+  #
+  # file definition
+  #
+  file =
+    id:     STATUS.EMPTY
+    name:   STATUS.EMPTY
+    mode:   STATUS.EMPTY
+    hint:   STATUS.EMPTY
+    text:   STATUS.EMPTY
+    type:   STATUS.EMPTY
+    status: STATUS.EMPTY
+
+    skin_id: $("#file_modal").attr("data-id")
+
+    #
+    # setting data to 'file'
+    #
+    set: (data) ->
+      this.id   = data.id
+      this.name = data.name
+      this.text = data.text
+
+      this.mode = switch
+        when data.type is "html"   then types.erb
+        when data.type is "haml"   then types.haml
+        when data.type is "slim"   then types.slim
+        when data.type is "css"    then types.css
+        when data.type is "sass"   then types.sass
+        when data.type is "coffee" then types.coffee
+        when data.type is "js"     then types.js
+
+      this.hint = switch
+        when this.mode is types.erb or this.mode is types.haml or this.mode is types.slim then hints.html
+        when this.mode is types.css or this.mode is types.sass                            then hints.css
+        when this.mode is types.coffee or this.mode is types.js                           then hints.js
+
+      this.type = switch
+        when this.hint is hints.html then "templates"
+        when this.hint is hints.css  then "css"
+        when this.hint is hints.js   then "js"
+
+
+    # ============================== ajax handlers ===================================== #
+
+    #
+    # find file by id
+    #
+    find: (id, callback) ->
+      $.ajax paths.edit(id),
+        type: 'GET'
+
+        success: (data, textStatus, jqXHR) ->
+          file.set(data)
+          file.update_editor()
+          callback() if typeof(callback) is "function"
+          return data
+
+    #
+    # update current file
+    #
+    update: (callback) ->
+      $.ajax paths.update(this.id),
+        type: 'PUT'
+        data: skin_file: {text: editor.getValue()}
+
+        success: (data, textStatus, jqXHR) ->
+          file.text = editor.getValue()
+          callback() if typeof(callback) is "function"
+          return data
+
+    #
+    # create new text file
+    #
+    create: (name, type, text, callback) -> 
+      $.ajax paths.create(),
+        type: 'POST'
+        data: skin_file: {name: name, file_type: type, text: text}, id: file.skin_id
+
+        success: (data, textStatus, jqXHR) ->
+          $("##{type}").append(editor.build_menu_item(data.id, data.name)) unless data.error is "already exists"
+          editor.bind_menu_items()
+          callback(data.id) if typeof(callback) is "function"
+          return data
+
+    #
+    # getting form for new file
+    #
+    new: (callback) ->
+      $.ajax paths.new(),
+        type: 'GET'
+        data: skin_id: file.skin_id
+
+        success: (data, textStatus, jqXHR) ->
+          callback() if typeof(callback) is "function"
+          return data
+
+    #
+    # remove current file
+    #
+    delete: (callback) ->
+      $.ajax paths.delete(this.id),
+        type: 'DELETE'
+
+        success: (data, textStatus, jqXHR) ->
+          $("a[href*='#{file.id}']").parent().remove()
+          file.status = STATUS.DELETED
+          editor.setValue('')
+          callback() if typeof(callback) is "function"
+          return data
+
+    #
+    # change current file name
+    #
+    change_name: (name, callback) ->
+      $.ajax paths.change_name(this.id),
+        type: 'PUT'
+        data: skin_file: {name: name}
+
+        success: (data, textStatus, jqXHR) ->
+          $("a[href*='#{file.id}']").html(name)
+          file.status = STATUS.NAME_CHANGED
+          callback() if typeof(callback) is "function"
+          return data
+
+    # ============================================================================= #
+    update_editor: ->
+      this.status = STATUS.OPENED
+      editor.setValue(this.text)
+      editor.change_options(this.mode, this.hint)
+      text_command.clean()
+
+    check_equal: ->
+      this.text is editor.getValue()
+
+    isempty: ->
+      this.id is STATUS.EMPTY
+
+
+  #
+  # functions to extend in editor
+  #
+  skin_editor =
+    last_pos: STATUS.EMPTY
+
+    #
+    # extend editor with buttons below
+    #
+    add_buttons: ->
+      skin_btns = ".CodeMirror-skinbuttons"
+
+      if $(skin_btns).length is 0
+        btns_html =
+          save: "<button id='filesave'>#{"<%= I18n.t('skin_files.save_file') %>"}</button>"
+          cancel: "<button id='filecancel'>#{"<%= I18n.t('skin_files.restore') %>"}</button>"
+          new_file: "<button id='filenew'>#{"<%= I18n.t('skin_files.new_file') %>"}</button>"
+          delete_file: "<button id='filedelete'>#{"<%= I18n.t('skin_files.delete_file') %>"}</button>"
+          change_name: "<button id='filechangename'>#{"<%= I18n.t('skin_files.change_name') %>"}</button>"
+
+        $(".CodeMirror-wrap").after "<div class='CodeMirror-skinbuttons'> 
+            #{btns_html.save} 
+            #{btns_html.cancel}
+            #{btns_html.delete_file}
+            #{btns_html.change_name}
+            #{btns_html.new_file}
+          </div>"
+
+        nav_height  = parseInt($("#skinfiles .mainnav").css("height"))
+        btns_height = parseInt($(skin_btns).css("height")) + 1
+
+        $("#skinfiles .mainnav").css("height", nav_height + btns_height + "px")
+
+    change_options: (mode, hint) ->
+      this.setOption("mode", mode)
+      this.setOption("hint", hint)
+
+    set_selected_menu: ->
+      if file.status == STATUS.OPENED
+        $("#skinfiles .sub a").removeClass("selected")
+        $("a[href*='#{file.id}']").addClass("selected")
+
+    remove_changename_input: ->
+      $(".changename").off().remove()
+      $("#filenew").fadeIn("slow") 
+
+    #
+    # thats how look like single menu item
+    #
+    build_menu_item: (id, name) ->
+      "<li><a href=#{id}>#{name}</a></li>"
+
+    #
+    # bind file menu buttons
+    #
+    bind_menu_items: ->
+      $("#skinfiles .sub a").off()
+      id = ""
+
+      #
+      # on file name click
+      #
+      $("#skinfiles .sub a").click (e) ->
+        e.preventDefault()
+        id = $(this).attr("href")
+
+        if ~id.indexOf('skins')
+          return true
+
+        if "#{id}" == "#{file.id}"
+          return false
+
+        if file.isempty() || file.check_equal()
+          file.find(id, editor.set_selected_menu)          
+          return true
+
+        unless file.check_equal()
+          modal.bind_not_saved()
+          modal.show(id)
+
+      $("ul#images a").fancybox
+        afterShow: ->
+          $(".fancybox-skin").append "<div class='fancybox_buttons'>
+            <button class='btn btn-primary fancybox_remove'><%= I18n.t('skin_files.delete_file') %></button>
+            <button class='btn btn-primary fancybox_close'><%= I18n.t('backend.cancel') %></button>
+            <span>css path: \"#{id}\"</span>
+            </div>"
+
+          $(".fancybox_remove").off().click (e) ->
+            e.preventDefault()
+
+            file.id = $("a[href*='#{id}']").attr("id")
+
+            file.delete ->
+              file.status = STATUS.IMAGE_DELETED
+
+            $("a[href*='#{id}']").parent().remove()
+            $(".fancybox-close").click()
+
+          $(".fancybox_close").click (e) ->
+            e.preventDefault()
+            $(".fancybox-close").click()            
+
+  #
+  # bootstrap modal
+  #
+  modal =
+    id: $("#file_modal")
+    from: STATUS.EMPTY
+
+    show: (from = STATUS.EMPTY) ->
+      this.from = from
+      this.id.modal()
+
+      #
+      # for better ui
+      #
+      keydown_esc = (e) ->
+        if e.keyCode == Key.Esc
+          $("#modalclose").click()
+          $(document).unbind("keydown", keydown_esc)
+
+      $(document).keydown(keydown_esc)
+
+    close: ->
+      this.id.modal('hide')
+      file.find(this.from) unless this.from is STATUS.EMPTY
+
+    #
+    # to avoid creating new buttons over and over again just disable binded methods
+    # thanks to that we can have only 'save' and 'continue' buttons (cancel is already handled in html)
+    #
+    diable_buttons: ->
+      $("button#modalsave").off()
+      $("button#modalcontinue").off()
+
+    #
+    # bind buttons in modal when file was not saved
+    #
+    bind_not_saved: ->
+      $("#file_modal .modal-body").html("<h3>#{'<%= I18n.t("skin_files.unsaved_changes") %>'}</h3>")
+
+      #
+      # on modal button save click
+      #
+      $("button#modalsave").click (e) ->
+        e.preventDefault()
+        file.update()
+        modal.close()
+
+      #
+      # on modal button continue click
+      #
+      $("button#modalcontinue").click (e) ->
+        e.preventDefault()
+        modal.close()
+
+    #
+    # bind buttons in modal when creating new file
+    #
+    bind_new_file: ->
+      $("button#modalcontinue").hide()
+
+      #
+      # handling image file upload
+      #
+      $(document).on "change", "#skin_file_skin", ->
+        val = $(this).val()
+
+        #
+        # on image select option
+        #
+        if /image/.test(val)
+          $("#skin_file_name").parent().hide()
+
+          if $(".imageupload").length is 0
+            $(".modal-body").prepend("<div class='row-fluid imageupload'>
+              <label class='form-label span2' for='skin_file_image'><%= I18n.t('skin_files.file') %></label>
+              <input id='skin_file_image' class='span10' name='skin_file[image]' type='file'>
+            </div>")
+
+            #
+            # upload file with jquery.fileupload
+            #
+            $("#skin_file_image").fileupload
+              dataType: "json"
+              url: paths.add_image()
+              uploadTemplateId: null
+              downloadTemplateId: null
+
+              add: (e, data) ->
+                data.submit()
+                modal.close()
+
+              done: (e, data) ->
+                $("ul#images").append("<li><a class='fancybox' href='#{data.result.path}' id='#{data.result.id}'>#{data.result.name}</a></li>")
+                editor.bind_menu_items()
+        else
+          $("#skin_file_name").parent().show()
+          $(".imageupload").remove()
+
+      #
+      # on modal button save click
+      #
+      $("button#modalsave").click (e) ->
+        e.preventDefault()
+
+        name = $("#skin_file_name").val()
+        type = $("#skin_file_skin option:selected").attr("value")
+
+        $("#skin_file_image").off()
+        file.create(name, type)
+        modal.close()
+
+      keydown_enter = (e) ->
+        if e.keyCode is Key.Enter
+          $("#modalsave").click()
+          $(document).unbind("keydown", keydown_enter)
+
+      $(document).keydown(keydown_enter)
+
+    #
+    # bind buttons in modal when deleting file
+    #
+    bind_delete_file: ->
+      $("#file_modal .modal-body").html("<h3>#{'<%= I18n.t('skin_files.alert_before_delete') %>'}</h3>")
+      $("button#modalsave").hide()
+
+      #
+      # on modal button continue click
+      #
+      $("button#modalcontinue").click (e) ->
+        e.preventDefault()
+        file.delete()
+        modal.close()
+
+  
+  #
+  # mokio frontend helpers
+  #
+  mokio_helpers =
+    id: $("#frontend_helpers")
+    raw_id: "#frontend_helpers"
+    top:  $("#frontend_helpers").css("top")
+    right:  $("#frontend_helpers").css("right")
+    opened: false
+
+    #
+    # show helpers
+    #
+    show: ->
+      editor.last_pos = editor.getCursor() if editor.last_pos is STATUS.EMPTY
+      this.add_variables().bind_item_click()
+
+      unbind = ->
+        $(document).unbind("keydown", document_keydown).unbind("click", document_click)  
+
+      document_click = (e) ->
+        e.preventDefault()
+        mokio_helpers.hide()
+        unbind()
+
+      document_keydown = (e) ->
+        if e.keyCode is Key.Esc
+          mokio_helpers.hide()
+          unbind()
+      #
+      # for better ui
+      # 
+      $(document).keydown(document_keydown)
+      $(document).click(document_click)      
+
+      this.id.addClass("displayed").show()
+      this.opened = true
+
+    #
+    # hide helpers
+    #
+    hide: ->
+      this.opened = false
+      this.id.removeClass("displayed").hide()
+
+    #
+    # style it on fullscreen
+    #
+    fullscreen: (isFullscreen) ->
+      if isFullscreen
+        this.id.css
+          top: 0
+          right: "1%"
+          position: "fixed"
+      else
+        this.id.css
+          top: mokio_helpers.top
+          right: mokio_helpers.right
+          position: "absolute"
+
+    #
+    # add variables for specifed file
+    #
+    add_variables: ->
+      return this if file.name is STATUS.EMPTY
+
+      $("#{this.raw_id} .variable").remove()
+      $("#{this.raw_id} .hr").remove()
+
+      filename  = file.name.replace(/\.(.*)/, '')
+      variables = []
+
+      this.id.append("<div class='hr'><%= I18n.t("skin_files.variable") %></div>")
+
+      if filename is "list"
+        variables = ["menu:@menu:<%= I18n.t("skin_files.variables.menu") %>", "contents:@contents:<%= I18n.t("skin_files.variables.contents") %>"]
+      else if filename == "home"
+        variables = ["contents:@contents:<%= I18n.t("skin_files.variables.contents") %>"]
+      else 
+        variables = ["menu:@menu:<%= I18n.t("skin_files.variables.menu") %>", "content:@content:<%= I18n.t("skin_files.variables.content") %>", "data_files:@content.data_files:<%= I18n.t("skin_files.variables.data_files") %>"]
+
+      for key in variables
+        name  = key.split(':')[0]
+        args  = key.split(':')[1]
+        title = key.split(':')[2]
+        mokio_helpers.id.append("<span class='helper variable' data-args='#{args}' title='#{title}'>#{name}</span>")
+
+      return this
+
+    #
+    # how to print helper method to editor
+    #
+    parse_helper: (name) ->
+      if file.mode is types.slim or file.mode is types.haml
+        method = "= #{name}"
+      else
+        method = "<" + "%= #{name} %>"
+      return method
+
+    #
+    # on frontend helper name click
+    #
+    bind_item_click: ->
+      $("#{this.raw_id} .helper").off().click (e) ->
+        e.stopPropagation()
+
+        name = $(this).attr("data-args")
+
+        #
+        # paste given method at last selected position in editor
+        #
+        editor.replaceRange(mokio_helpers.parse_helper(name), editor.last_pos, editor.last_pos)
+
+        #
+        # hide helpers and focus editor again
+        #
+        mokio_helpers.hide()
+        editor.focus() 
+        editor.setCursor(editor.last_pos)
+
+
+
+# ----------------------------------------- on document 'ready' --------------------------------------------------------- #
+
+  #
+  # start default editor
+  #
+  editor = CodeMirror.fromTextArea document.getElementById('filecode'), 
+    lineNumbers: true
+    lineWrapping: true
+    indentUnit: 2
+    tabSize: 2
+    hint: "html-hint"
+    theme: "monokai"
+    keymap: "sublime"
+    mode: types.erb
+    extraKeys:
+      "Shift-Tab": "autocomplete"
+
+      "F11": (cm) ->
+        cm.setOption("fullScreen", !cm.getOption("fullScreen"))
+        mokio_helpers.fullscreen(cm.getOption("fullScreen"))
+
+      "Esc": (cm) ->
+        cm.setOption("fullScreen", false) if (cm.getOption("fullScreen"))
+
+      "Ctrl-S": ->
+        $("#filesave").click()
+
+      "Ctrl-R": ->
+        unless mokio_helpers.opened
+          mokio_helpers.show()
+        else
+          mokio_helpers.hide()
+
+  #
+  # merge skin_editor into editor, I'm doing this to avoid inconsistencies in writing code
+  # 
+  $.extend(editor, skin_editor) 
+
+
+  #
+  # add save/cancel(etc) buttons
+  #
+  editor.add_buttons()
+
+  #
+  # bind functions on left menu
+  #
+  editor.bind_menu_items()
+
+  #
+  # Save last cursor position in editor
+  #
+  editor.on "cursorActivity", ->
+    editor.last_pos = editor.getCursor()
+
+  #
+  # clear modal content on hide, show all buttons and unbind thiers actions
+  #
+  $('#file_modal').on 'hidden.bs.modal', ->
+    $("#file_modal .modal-body").empty()
+    $("button#modalsave").show()
+    $("button#modalcontinue").show()
+    modal.diable_buttons()
+
+  #
+  # on editor save click
+  #
+  $("#filesave").click (e) ->
+    return false if file.isempty() or file.check_equal()
+    e.preventDefault()
+    file.update()
+
+  #
+  # on editor cancel click
+  #
+  $("#filecancel").click (e) ->
+    return false if file.isempty()
+    e.preventDefault()
+
+    #
+    # when file was deleted
+    #
+    if file.status is STATUS.DELETED
+      file.create(file.name, file.type, file.text, file.find)
+      return true
+
+    #
+    # when name was changed
+    #
+    else if file.status is STATUS.NAME_CHANGED
+      file.change_name file.name, ->
+        file.status = STATUS.OPENED
+      return true
+
+    #
+    # when deleted file was image
+    #
+    else if file.status is STATUS.IMAGE_DELETED # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!111111oneone
+      alert("<%= I18n.t("skin_files.better_dont_delete_next_time") %>")
+      return false
+
+    unless file.check_equal()
+      $("button#modalsave").hide()
+      modal.bind_not_saved()
+      modal.show(file.id, true)
+
+  #
+  # on editor new file click
+  #
+  $("#filenew").click (e) ->
+    e.preventDefault()
+    file.new()
+    modal.bind_new_file()
+    modal.show()
+
+  #
+  # on editor delete file click
+  #
+  $("#filedelete").click (e) ->
+    return false if file.isempty()
+    e.preventDefault()
+    modal.bind_delete_file()
+    modal.show()
+
+  #
+  # on editor file change click
+  #
+  $("#filechangename").click (e) ->
+    return false if file.isempty()
+    e.preventDefault()
+
+    $("#filenew").fadeOut "fast", ->
+      if $(".changename").length is 0
+        $(".CodeMirror-skinbuttons").append("<input type='text' class='changename' autofocus></input>")
+
+      filename = $("a[href*='#{file.id}']").html()
+
+      $(".changename").focus ->
+        this.selectionStart = 0
+        this.selectionEnd   = filename.replace(/\.(.*)/, '').length
+      .val(filename).focus()
+
+      #
+      # unbind document events
+      #
+      unbind = ->
+        $(document).unbind("keydown", document_keydown).unbind("click", document_click)
+
+      document_keydown = (e) ->
+        if e.keyCode == Key.Esc
+          editor.remove_changename_input()
+          unbind()
+
+      document_click = (e) ->
+        e.preventDefault()
+        editor.remove_changename_input()
+        unbind()
+
+      #
+      # for better ui
+      # 
+      $(document).keydown(document_keydown)
+      $(document).click(document_click)
+
+      $(".changename").keydown (e) ->
+        if e.keyCode is Key.Enter
+          e.preventDefault()
+          file.change_name($(this).val())
+          editor.remove_changename_input()
+          unbind()
+
+      #
+      # don't want document events 
+      #
+      $(".changename").click (e) ->
+        e.stopPropagation()
+
+
+  # ====================================== text commands ====================================== #
+  rails_tag = (string) ->
+    "<" + "%= #{string} %>"
+
+  rails_s_tag = (string) ->
+    "<" + "%- #{string} %>"
+
+  isALetter = (charVal) ->
+    unless charVal.toUpperCase() is charVal.toLowerCase()
+      return true
+    else
+      return false
+
+
+  text_command =
+    first:     false
+    second:    false
+    start_pos: STATUS.EMPTY
+    cmd:       ""
+    opened:    false
+
+    #
+    # to function multi_tag
+    #
+    multi_tags:
+      number: STATUS.EMPTY
+
+      clean: ->
+        this.number = STATUS.EMPTY
+
+    #
+    # to function ruby_tag
+    #
+    ruby:
+      cmd: ""
+
+      clean: ->
+        this.cmd = ""
+
+    #
+    # to function default_layout
+    #
+    def_layout:
+      cmd: ""
+      html: "<html>\n\t<head>\n\t\t#{rails_tag("include_skin_css_all")}\n\t\t#{rails_tag("include_meta")}\n\t</head>\n\n\t
+      <body>\n\t\t<nav>\n\t\t\t#{rails_tag("build_menu \"tpo\", 2")}\n\t\t</nav>\n\n\t\t#{rails_tag("yield")}\n\t\t#{rails_tag("include_skin_js_all")}\n\t</body>\n
+      </html>"
+
+      clean: ->
+        this.cmd = ""
+
+    #
+    # cleaning command
+    #
+    clean: ->
+      this.first     = false
+      this.second    = false
+      this.cmd       = ""
+      this.start_pos = STATUS.EMPTY
+
+      #
+      # add your clean here
+      #
+      this.multi_tags.clean()
+      this.ruby.clean()
+      this.def_layout.clean()
+
+    add: (c) ->
+      this.cmd += c
+      return this
+
+    #
+    # text_command starts with two "*"
+    #
+    check_start: (char) ->
+      if char is "*"
+        if !this.first
+          line = editor.getCursor().line
+          ch   = editor.getCursor().ch - 1 # -1 becaouse we need cursor before first '*'
+          this.start_pos = {line: line, ch: ch}
+          this.first     = true
+          this.add(char)
+        else
+          if !this.second
+            this.second = true
+            this.add(char)
+          else if this.opened
+            this.try(char)
+          else
+            this.clean()
+      else
+        if this.first and this.second
+          this.opened = true
+          this.try(char)
+        else
+          this.clean()
+
+    # ---------------------------------------------------- #
+    #
+    # add your method checking there
+    #
+    try: (char) ->
+      this.multi_tag(char)
+      this.ruby_tag(char)
+      this.default_layout(char)
+
+    # ---------------------------------------------------- #
+
+    #
+    # adding html tag multiple times, ends with single '*'
+    #
+    # example:
+    #  **2xli* prints:
+    #  <li> </li>
+    #  <li> </li>
+    #
+    # respect haml(only simple), erb and slim
+    #
+    # TODO: haml parser
+    #
+    multi_tag: (char) ->
+      if char >= '0' and char <= '9'
+        this.multi_tags.number = char
+      else
+        if this.multi_tags.number is STATUS.EMPTY
+          return false
+
+        if char is "x" and !/\**\dx/.test(this.cmd)
+          this.add(this.multi_tags.number).add(char)
+        else
+          if /\**\dx/.test(this.cmd)
+            if char is "*"
+              number  = this.cmd.replace(/\**/, '')
+              tag_all = number.replace(/.+x/, '')
+              tag     = tag_all.replace(/\s.+/, '').replace(/\W/, '')
+              number  = parseInt(number.replace(/x.+/, ''))
+
+              get_tags = (number, tag_all, tag) ->
+                html = ""
+                for i in [0..number]
+                  if file.mode is types.erb or file.mode is STATUS.EMPTY
+                    html += "<#{tag_all}></#{tag}>\n"
+                  else if file.mode is types.slim
+                    html += "#{tag_all}\n"
+                  else if file.mode is types.haml
+                    html += "%#{tag}\n"
+                return html
+
+              editor.replaceRange(get_tags(number, tag_all, tag), this.start_pos, editor.getCursor())
+              this.clean()
+            else
+              this.add(char)
+          else
+            this.multi_tags.clean()
+
+    #
+    # adding ruby tag
+    #
+    # command: **ruby
+    # prints: < %= (putting there cursor) %>
+    #
+    ruby_tag: (char) ->
+      if char is 'r' and this.ruby.cmd is ""
+        this.ruby.cmd += char
+      else if char is 'u' and this.ruby.cmd is "r"
+        this.ruby.cmd += char
+      else if char is 'b' and this.ruby.cmd is "ru"
+        this.ruby.cmd += char
+      else if char is 'y' and this.ruby.cmd is "rub"
+        this.ruby.cmd += char
+      else
+        this.ruby.clean()
+
+      if this.ruby.cmd is "ruby"
+        get_tag = ->
+          html = ""
+          if file.mode is types.erb or file.mode is STATUS.EMPTY
+            html += "<" + "%=  %>"
+          else if file.mode is types.slim
+            html += "=  "
+          else if file.mode is types.haml
+            html += "=  "
+          return html
+
+        editor.replaceRange(get_tag(), this.start_pos, editor.getCursor())
+        editor.setCursor({line: this.start_pos.line, ch: this.start_pos.ch + 4})
+        this.clean()
+
+    #
+    # prints default layout (only erb):
+    #
+    default_layout: (char) ->
+      if char is 'l' and this.def_layout.cmd is ""
+        this.def_layout.cmd += char
+      else if char is 'a' and this.def_layout.cmd is "l"
+        this.def_layout.cmd += char
+      else if char is 'y' and this.def_layout.cmd is "la"
+        this.def_layout.cmd += char
+      else if char is 'o' and this.def_layout.cmd is "lay"
+        this.def_layout.cmd += char
+      else if char is 'u' and this.def_layout.cmd is "layo"
+        this.def_layout.cmd += char
+      else if char is 't' and this.def_layout.cmd is "layou"
+        this.def_layout.cmd += char
+      else
+        this.def_layout.clean()
+
+      if this.def_layout.cmd is "layout"
+        editor.replaceRange(this.def_layout.html, this.start_pos, editor.getCursor())
+        this.clean()
+
+  editor.on "change", (cm, change) ->
+    text_command.check_start(change.text[0])
+
+
+
+
+  textcommand =
+    keywords: ["a", "abbr", "address", "area", "article", "aside", "audio", "b", "base", "bdi", "bdo", "blockquote", "body", "br", "button", "canvas", "caption", "cite", "code", "col", "colgroup", "data", "datalist", "dd", "del", "details", "dfn", "dialog", "div", "dl", "dt", "em", "embed", "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hgroup", "hr", "html", "i", "iframe", "img", "input", "ins", "kbd", "keygen", "label", "legend", "li", "link", "main", "map", "mark", "menu", "menuitem", "meta", "meter", "nav", "noscript", "object", "ol", "optgroup", "option", "output", "p", "param", "pre", "progress", "q", "rb", "rp", "rt", "rtc", "ruby", "s", "samp", "script", "section", "select", "small", "source", "span", "strong", "style", "sub", "summary", "sup", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track", "u", "ul", "var", "video", "wbr"]
+    start_pos: 0
+    last_pos:  0
+
+    try: ->
+      line = editor.getCursor().line
+      ch   = editor.getCursor().ch
+      this.last_pos = {line: line, ch: ch}
+      cmd  = ""
+
+      char = this.getchar(line, ch)
+
+      while char isnt " " and ch isnt 0
+        ch -= 1
+        this.start_pos = {line: line, ch: ch}
+        cmd = char + cmd
+        char = this.getchar(line, ch)
+
+      console.log("cmd: #{cmd}")
+      
+      this.run(cmd)
+
+    getchar: (line, ch) ->
+      editor.getRange( { line: line, ch: ch-1 }, {line: line, ch: ch } )
+
+    can_parse: (cmd) ->
+      if file.mode isnt types.erb and file.mode isnt types.slim and file.mode isnt types.haml and file.mode isnt STATUS.EMPTY
+        return false
+
+      can = false
+
+      for tag in this.keywords
+        if cmd.indexOf(tag) isnt -1
+          can = true 
+          break
+
+      if can is false
+        return false
+
+      return false if cmd.indexOf("<") isnt -1 or cmd.indexOf("(") isnt -1 or cmd.indexOf(")") isnt -1
+      return true
+
+    run: (cmd) ->
+      if this.erb(cmd) is true
+        return true
+
+      if this.html_tags(cmd) is true
+        return true
+
+    erb: (cmd) ->
+      if file.mode is types.erb or file.mode is STATUS.EMPTY
+        if cmd is "erb"
+          editor.replaceRange(rails_tag(""), this.start_pos, this.last_pos)
+          editor.setCursor({line: this.start_pos.line, ch: this.start_pos.ch + 4})
+          return true
+        else if cmd is "erbs"
+          editor.replaceRange(rails_s_tag(""), this.start_pos, this.last_pos)
+          editor.setCursor({line: this.start_pos.line, ch: this.start_pos.ch + 4})
+          return true
+
+    html_tags: (cmd) ->
+      return false unless this.can_parse(cmd)
+      tags = cmd.split('>')
+      # console.log(tags)
+

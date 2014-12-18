@@ -1,0 +1,119 @@
+pl:
+  backend:
+    breadcrumbs:
+      skins: Skórki
+      skins_new: Nowa skórka
+      skins_edit: Edycja skórki
+
+    sidebars:
+      skins: Skórki
+
+  skins:
+    index_title: Skórki
+    index_add_new: Dodaj nową skórkę
+    edit_title: Edycja skórki
+    new_title: Nowa skórka
+    update_active_true: "Skórka '%{title}' została aktywowana"
+    update_active_false: "Skórka '%{title}' została wyłączona"
+    name: Nazwa
+    active: Włączona
+    updated_at: Ostatnio edytowana
+    correct_structure: "Poprawna struktura pliku zip:"
+    skin_name: Nazwa skórki
+    requirements: "Wymagania:"
+
+    zip_name_skin_name: Nazwa pliku zip musi się zgadzać z nazwą zawartej skórki
+    uniq_name: Nazwa skórki musi być unikalna
+    only_css_html: "Aktualnie wspierane formaty styli: <b>.css</b>"
+    only_js_html: "Aktualnie wspierane formaty skryptów: <b>.js</b>"
+    image_format_html: "Zdjęcia powinny być w formacie: <b>.jpg .gif .png</b>"
+    updated: "Skórka została pomyślnie zapisana"
+    deleted: "Skórka została skasowana"
+    created: "Skórka została utworzona"
+    not_updated: "Wystąpiły problemy przy zapisie skórki"
+    not_deleted: "Wystąpiły problemy przy kasowaniu skórki"
+    not_created: "Wystąpiły problemy przy tworzeniu skórki"
+
+
+  skin_files:
+    name: Nazwa
+    type: Typ
+    file: Plik
+    variable: Zmienne
+    variables:
+      menu: "Aktywny element menu"
+      content: "Aktualnie używana treść"
+      contents: "Lista aktualnie używanych treści"
+      data_files: "Lista załączników do treści (standardowo zdjęcia lub filmy dla galerii)"
+    updated: "Plik '%{name}' został zapisany"
+    not_updated: "Plik '%{name}' nie został zapisany" 
+    created: "Plik '%{name}' został utworzony"
+    not_created: "Plik '%{name}' nie został utworzony"
+    deleted: "Plik '%{name}' został usunięty"
+    not_deleted: "Plik '%{name}' nie został usunięty"
+    name_changed: "Zmieniono nazwę pliku '%{oldname}'' na '%{name}'"
+    name_not_changed: "Nie udało się zmienić nazwy pliku '%{oldname}'' na '%{name}'"
+    restore: Przywróć
+    save_file: Zapisz plik
+    new_file: Nowy plik
+    delete_file: Usuń plik
+    change_name: Zmień nazwę
+    unsaved_changes: "Aktualnie otwarty plik ma niezapisane zmiany, czy napewno chcesz kontynuawać?"
+    alert_before_delete: Czy napewno chcesz usunąć ten plik?
+    better_dont_delete_next_time: "Patrz gamoniu co kasujesz, nie ma przywracania zdjęć"
+
+  activerecord:
+    attributes:
+      mokio/skin:
+        name: Nazwa
+        active: Włączony
+        zip_file: Plik .zip
+
+    errors:
+      models:
+        mokio/skin:
+          attributes:
+            zip_file:
+              uniq_name_error: "Skórka o nazwie '%{name}' już istnieje"
+              skin_structure_error: "Nieodpowiednia struktura skórki"
+        mokio/skin_file:
+          attributes:
+            name:
+              already_exists: "Plik '%{name}' istnieje juz w skórce '%{skin}'"
+
+  mokio_frontend_helpers_descriptions:
+    include_skin_css_all: "Załącza wszystkie pliki css dostępne w skórce"
+    include_skin_css: "include_skin_css(nazwa) Załącza plik css o podanej nazwie"
+    include_skin_js_all: "Załącza wszystkie pliki js dostępne w skórce"
+    include_skin_js: "include_skin_js(nazwa) Załącza plik js o podanej nazwie"
+    include_jquery: "Załącza plik z biblioteką jquery"
+    include_jquery_ui: "Załącza plik z biblioteką jquery.ui.core"
+    include_meta: "Załącza meta tagi"
+    render_template: ""
+    build_menu: ""
+    build_menu_by_name: ""
+    create_menu: ""
+    build_items: ""
+    isMenu?: ""
+    menu_content_all: ""
+    menu_content: ""
+    menu_content_titles: ""
+    menu_static_modules: ""
+    menu_static_modules_titles: ""
+    menu_slug: ""
+    menu_locale_root_id: ""
+    menu_root_id: ""
+    isContent?: ""
+    content_title: ""
+    content_intro: ""
+    content_content: ""
+    content_main_pic: ""
+    main_pic_url: ""
+    build_external_script: ""
+    build_all_external_scripts: ""
+    build_common: ""
+    build_static_modules: ""
+    build_static_modules_always_displayed: ""
+    build_from_content: ""
+    build_from_view_file: ""
+    build_content: ""

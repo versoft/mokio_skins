@@ -1,0 +1,119 @@
+en:
+  backend:
+    breadcrumbs:
+      skins: Skins
+      skins_new: New skin
+      skins_edit: Edit skin
+
+    sidebars:
+      skins: Skins
+
+  skins:
+    index_title: Skins
+    index_add_new: Add new skin
+    edit_title: Edit skin
+    new_title: New skin
+    update_active_true: "Skin '%{title}' is now active"
+    update_active_false: "Skin '%{title}' was disabled"
+    name: Name
+    active: Active
+    updated_at: Last modified
+    correct_structure: "Valid zip structure:"
+    skin_name: Skin name
+    requirements: "Requirements:"
+
+    zip_name_skin_name: Zip file name must match the name of the included skins
+    uniq_name: The skin name must be unique 
+    only_css_html: "Currently supported formats styles: <b>.css</b>"
+    only_js_html: "Currently supported formats scripts: <b>.js</b>"
+    image_format_html: "Photos should be in the format: <b>.jpg .gif .png</b>"
+
+    updated: "Skin has been saved"
+    deleted: "Skn has been deleted"
+    created: "Skin has been created"
+    not_updated: "Skin has NOT been updated"
+    not_deleted: "Skin has NOT beed deleted"
+    not_created: "Skin has not been created"
+
+  skin_files:
+    name: Name
+    type: Type
+    file: File
+    variable: Variables
+    variables:
+      menu: "Currently used menu"
+      content: "Currently used content"
+      contents: "List currently used content"
+      data_files: "List of annexes to the content (standard images or videos for gallery)"
+    updated: "File '%{name}' was saved"
+    not_updated: "File '%{name}' was not saved" 
+    created: "File '%{name}' was created"
+    not_created: "File '%{name}' was not created"
+    deleted: "File '%{name}' was deleted"
+    not_deleted: "File '%{name}' was not deleted"
+    name_changed: "Changed file name '%{oldname}'' to '%{name}'"
+    name_not_changed: "Couldnt change name for file '%{oldname}'' to '%{name}'"
+    restore: Restore
+    save_file: Save file
+    new_file: New file
+    delete_file: Remove file
+    change_name: Change name
+    unsaved_changes: "AktThe currently open file has unsaved changes, are you sure you want to continue?"
+    alert_before_delete: Are you sure you want to delete this file?
+    better_dont_delete_next_time: "See what you delete, no recovery image for now"
+
+  activerecord:
+    attributes:
+      mokio/skin:
+        name: Name
+        active: Active
+        zip_file: File .zip
+
+    errors:
+      models:
+        mokio/skin:
+          attributes:
+            zip_file:
+              uniq_name_error: "Skin with name '%{name}' already exists"
+              skin_structure_error: "Incorrect structure of the skin"
+        mokio/skin_file:
+          attributes:
+            name:
+              already_exists: "File '%{name}' already exists in skin '%{skin}'"
+
+  mokio_frontend_helpers_descriptions:
+    include_skin_css_all: "Attaches all css files available on the skin"
+    include_skin_css: "Attaches css file with the specified name"
+    include_skin_js_all: "Attaches all js files available on the skin"
+    include_skin_js: "Attaches js file with the specified name"
+    include_jquery: "Attaches jquery file"
+    include_jquery_ui: "Attaches jquery.ui.core file"
+    include_meta: "Attaches meta tags"
+    render_template: ""
+    build_menu: ""
+    build_menu_by_name: ""
+    create_menu: ""
+    build_items: ""
+    isMenu?: ""
+    menu_content_all: ""
+    menu_content: ""
+    menu_content_titles: ""
+    menu_static_modules: ""
+    menu_static_modules_titles: ""
+    menu_slug: ""
+    menu_locale_root_id: ""
+    menu_root_id: ""
+    isContent?: ""
+    content_title: ""
+    content_intro: ""
+    content_content: ""
+    content_main_pic: ""
+    main_pic_url: ""
+    build_external_script: ""
+    build_all_external_scripts: ""
+    build_common: ""
+    build_static_modules: ""
+    build_static_modules_always_displayed: ""
+    build_from_content: ""
+    build_from_view_file: ""
+    build_content: ""

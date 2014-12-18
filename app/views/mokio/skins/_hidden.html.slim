@@ -1,0 +1,17 @@
+#frontend_helpers
+  - Rails.configuration.mokio_frontend_helpers.each do |method|
+    span.helper title=t(method.desc) data-args=method.args = method.name
+    
+- cache [:mokio_skins_modal, obj] do
+  .modal.fade id="file_modal" role="dialog" aria-hidden="true" style="display:none;" aria-labelledby="myModalLabel" data-id=obj.id
+    .modal-dialog
+      .modal-content
+        .modal-header
+        .modal-body
+        .modal-footer
+          button#modalsave.btn.btn-primary= bt("save")
+          button#modalcontinue.btn.btn-primary= bt("continue")
+          button#modalclose.btn.btn-default type="button" data-dismiss="modal" = bt("close")
+
+#editor_helper
+  

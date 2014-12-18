@@ -1,0 +1,31 @@
+- if can? :manage, Mokio::Skin
+  li.user_nav
+    a href=skins_path
+      span.icon16.icomoon-icon-expand-4
+      = bt("skins", "backend.sidebar")
+
+- content_for :js do      
+  javascript:
+    $(document).ready(function () {
+      setTimeout(function() {
+        console.log("Re-enabling active buttons.");
+        $(".activebtn").off().bootstrapSwitch('destroy');
+        $(".activebtn").bootstrapSwitch(); 
+
+        function update_skin() {
+          $(".activebtn").on("switch-change", function(e, data) {
+            url = '/' + Mokio.engine_root() + "/skins/" + $(this).val() + "/update_active";
+
+            if ($(this).bootstrapSwitch('state') == true) {
+              $('.activebtn').unbind("switch-change").bootstrapSwitch('toggleRadioState');
+              $.post(url);
+              update_skin();
+            }
+            else {
+              $.post(url);        
+            }
+          });    
+        }
+        update_skin();
+      }, 500);
+    });

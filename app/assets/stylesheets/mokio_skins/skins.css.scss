@@ -1,0 +1,277 @@
+@import 'mokio_skins/common';
+
+#skinfiles {
+	margin-top: 20px !important;
+
+  .mainnav {
+    height: 600px;
+    background: none repeat scroll 0 0 #2a3644;
+    overflow-y: scroll;
+
+    li {
+      margin: 0 0 4px;
+
+      a {
+        line-height: 120%;
+        height: auto;
+        padding: 5px 0;
+      }
+    }
+
+    .sub {
+      position: relative;
+      left: 12px;
+    }
+
+    .sub a { font-size: 10px; padding-left: 60px; }
+
+    a.selected {
+      text-decoration:none;
+      background: #35404d;
+    }
+  }
+
+	ul {
+    margin-top: 0;
+		list-style: none;
+	}
+
+  hr { margin-top: 40px; }
+
+  .span8 {
+    margin-left: 50px;
+    position: relative;
+  }
+
+  .CodeMirror { cursor: pointer; }
+
+  .CodeMirror-skinbuttons {
+    background: $editor_color;
+    color: $editor_text_color;
+    width: 100%;
+    height: 26px;
+    margin-top: 0;
+    border-top: 1px solid $editor_text_color;
+
+    button {
+      margin-left: 10px;
+      background: $editor_color;
+      color: $editor_text_color;
+      min-width: 18%;
+      border: none;
+    }
+
+    .changename {
+      width: 20%;
+      height: 21px;
+      margin-top: 1px;
+      background: $editor_color;
+      color: $editor_text_color;
+    }
+
+    .editor_help {
+      cursor: pointer;
+    }
+  }
+  
+  ::-webkit-scrollbar {
+    height: 5px;
+    width: 5px;
+    background: #2a3644;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #dd122a;
+    -webkit-border-radius: 1ex;
+    -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.75);
+  }
+
+  ::-webkit-scrollbar-corner { background: #000; }
+}
+
+#file_modal {
+  width: 40% !important;
+
+  .modal-body {
+    h3 { text-align: center; }
+  } 
+}
+
+.fancybox_buttons {
+  margin-top: 10px;
+  margin-left: 41%;
+
+  span {
+    margin-left: 5%;
+    color: red;
+  }
+}
+
+#frontend_helpers {
+  max-width: 300px;
+  height: 400px;
+  overflow-y: scroll;
+  background: none repeat scroll 0 0 #2a3644;
+  color: $editor_text_color;
+  position: absolute;
+  top: 152px;
+  right: 9%;
+  z-index: 2001; // 1 higher than fullscreen editor
+  display: none;
+  text-align: center;
+  
+  span {
+    display: block;
+    cursor: pointer;
+
+    &:hover { background: #35404d; }
+  }
+
+  .hr {
+    height: 20px;
+    width: 100%;
+    border-top: 1px solid white;
+    border-bottom: 1px solid white;
+    margin-top: 20px;
+  }
+}
+
+.helpbox {
+  min-height: 20px;
+  padding: 19px;
+  margin: 10px 20px 10px 0;
+  background-color: #f5f5f5;
+  border: 1px solid #e3e3e3;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+
+  h4 { margin-left: 17%; }
+
+  .skin_name { margin-left: 22%; }
+
+  .main {
+    margin-left: 26%;
+    margin-top: 9px;
+
+    li {
+      list-style-type: none;
+
+      span { margin-left: 5px; }
+
+      ul {
+        margin-left: 5%;
+
+        li:first-child {
+          margin-top: 10px;
+        }
+
+        li {
+          padding: 2px;
+          display: block;
+        }
+      }
+    }
+  }
+
+  .req {
+    margin-left: 21%;
+    margin-top: 15px;
+
+    li {
+      list-style-type: none;
+      margin-bottom: 33px;
+
+      span {
+        margin-left: 5px;
+      }
+    }
+  }
+}
+
+
+#editor_helper {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: white;
+  top: 0;
+  left: 0;
+  z-index: 2000;
+  background-color: #f5f5f5;
+  display: none;
+}
+//----------------------- Media queries -----------------------
+
+@media only screen and (max-width: 1650px) {
+  #skinfiles .mainnav .sub a {
+    min-width: 0;
+    padding-left: 30px;
+  } 
+}
+
+@media only screen and (max-width: 1350px) {
+  #skinfiles .mainnav .sub a {
+    min-width: 0;
+    padding-left: 20px;
+  }
+
+  #skinfiles .CodeMirror-skinbuttons button {
+    min-width: 10%;
+  }
+}
+
+@media only screen and (max-width: 1100px) {
+  #skinfiles .mainnav .sub a {
+    min-width: 0;
+    padding-left: 15px;
+  } 
+}
+
+@media only screen and (max-width: 980px) {
+  #skinfiles .mainnav .sub a {
+    min-width: 0;
+    padding-left: 10px;
+  }
+
+  #file_modal {
+    margin-left: -200px !important;
+  }
+}
+
+@media only screen and (max-width: 769px) {
+  #skinfiles {
+    .mainnav {
+      height: auto;
+      min-height: 0;
+
+      .sub a {
+        min-width: 0;
+        padding-left: 50px;
+      }
+    }
+
+    hr {
+      margin-top: 10px;
+    }
+
+    .span8 {
+      margin-left: 0;
+      margin-top: 20px;
+    }
+  }
+}
+
+@media only screen and (max-width: 687px) {
+  .modal-footer .btn-default {
+    margin-top: 5px;
+  }
+
+  #skinfiles .CodeMirror-skinbuttons button {
+    margin-left: 0;
+  }
+}
+
