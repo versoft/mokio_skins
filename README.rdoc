@@ -15,7 +15,7 @@ See http://www.mokio.org/support
 
 == Getting started with Mokio Skins
 
-Install Mokio first. See detailed instructions about at www.mokio.org/support
+Install Mokio first. See detailed instructions about at http://www.mokio.org/support#getting-started
 
 Lets assume that Mokio is mounted under /backend
 
@@ -57,6 +57,12 @@ Mokio Skins (see point 6). More information about erb, haml and slim format can 
 
 ERB: http://www.stuartellis.eu/articles/erb/
 
+HAML: http://haml.info/
+
+SLIM: http://slim­lang.com/
+
+== Activate your skin
+
 To activate your skin, navigate to: Skins → Edit skin
 
 a. Change Active field to On (green)
@@ -73,150 +79,6 @@ On the left there is a list of skin files available for edit.
 
 == Helpers available in editor [Ctrl R]
 
-­ include_skin_css_all – includes all css that are available in the skin (css folder)
+­ Description of helper methods available in Mokio Skins editor can be found on
 
-­ include_skin_css (name) – includes css file with given name
-
-­ include_skin_js_all – includes all javascripts files available in the skin (js folder)
-
-­ include_skin_js (name) ­ includes javascript file with given name
-
-­ include_jquery_ui – includes a file with jquery.ui.core library
-
-­ include_meta – include meta tags. Values should be set in backend for given article or menu. By
-
-default, for list of contents meta is taken from menu, for home page from first content and for
-
-­ render_template – renders given template from templates folder
-
-­ build_menu (initial_id, position, limit = 1, with_nav = true, nav_class="navmenu") – builds
-
-menu tree for specified arguments, returns html.
-
-position ­ menu position, root child name or id
-
-limit ­ how deep should builder look for children, count starts after position
-
-­ build_menu_by_name (initial_name, limit) ­ builds menu tree for specified arguments, returns
-
-initial_name ­ parent menu position name
-
-limit ­ how deep should builder look for children, count starts after position
-
-­ build_items (item, limit, index) ­ recursive building menu items
-
-item ­ Mokio::Menu object
-
-limit ­ how deep should builder look for children
-
-index ­ how deep is function already
-
-­ create_menu – alias for build_menu
-
-­ isMenu?(obj) ­ raises IsNotAMokioMenuErrorr if obj isn't a Mokio::Menu object
-
-­ menu_content_all (menu) ­ returns all contents added to given menu – regardless if they are
-
-­ menu_content (menu, limit = nil) ­ returns active contents added to menu
-
-menu ­ Mokio::Menu object
-
-limit ­ Limit contents count
-
-­ menu_content_titles ­ returns active contents titles added to menu
-
-menu ­ Mokio::Menu object
-
-limit ­ Limit contents count
-
-­ menu_static_modules – returns static_modules added to menu
-
-menu ­ Mokio::Menu object
-
-limit ­ Limit contents count
-
-­ menu_static_modules_titles ­ returns static_modules titles added to menu
-
-menu ­ Mokio::Menu object
-
-limit ­ Limit static modules count
-
-­ menu_slug (menu) – returns menu slug
-
-­ menu_locale_root_id ­ returns menu root id for active locale (language)
-
-­ menu_root_id ­ returns menu root id for given name
-
-­ build_static_modules ­ displays HTML blocks for given position. HTML blocks are a pieces of
-
-HTML that can be associated with given pages and given positions on the page.
-
-For one position we can have many HTML blocks. One HTML block can be
-
-associated with many positions.
-
-Position to which HTML block is assigned can have its own template, that will be used to generate
-
-final HTML. If a position doesn't have any template, HTML block content will be displayed using
-
-default template (nothing will be added to defined HTML code).
-
-Both position and HTML block can be activated or deactivated. To see HTML block, both position
-
-To display HTML block, it has to be assigned at least to one position.
-
-• position name – name of the position, for which HTML blocks will be displayed.
-
-=build_static_modules (''footer'') ­ displays all blocks assigned to “footer” position
-
-­ build_from_content(content, with_intro = true) ­ builds html for a single static_module,
-
-without specific template , with or without intro
-
-content ­ single static module from result
-
-­ build_from_view_file(content, tpl) ­ builds html for a single static_module with tpl template
-
-­ build_content(obj, position, with_intro = true) ­ checks visibility and generate static modules
-
-tree from Mokio::StaticModule object
-
-position – module position object
-
-­ isContent?(obj) ­ raises IsNotAMokioContentError if obj isn't a Mokio::Content object
-
-obj ­ Mokio::Content object (including inherited Mokio::Article etc..)
-
-­ content_title (obj) ­ returns title field for given object
-
-obj ­ Mokio::Content object (including inherited Mokio::Article etc..)
-
-­ content_intro (obj) ­ returns intro field for given object as html
-
-obj ­ Mokio::Content object (including inherited Mokio::Article etc..)
-
-­ content_content (obj) ­ returns content field for given object as html
-
-obj ­ Mokio::Content object (including inherited Mokio::Article etc..)
-
-­ content_main_pic(obj, version = nil) ­ returns main picture for given object as html
-
-obj ­ Mokio::Content object (including inherited Mokio::Article etc..)
-
-version – version of the picture (version available by default are as follows: “edit” ­ 100px
-
-x 100px and “main_pic” ­ 150px x 150px)
-
-­ main_pic_url (obj, version = nil) ­ returns main picture url for given object as string
-
-obj ­ Mokio::Content object (including inherited Mokio::Article etc..)
-
-version – version of the picture (version available by default are as follows: “edit” ­ 100px
-
-x 100px and “main_pic” ­ 150px x 150px)
-
-­ build_external_script – includes given external_script (by its name)
-
-­ build_all_external_scripts – includes all external scripts from mokio_external_scripts
-
-­ build_common(obj) – build a single external script from Mokio::ExternalScript object
+http://www.mokio.org/support#mokio-helpers
