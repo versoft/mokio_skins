@@ -12,7 +12,6 @@ Gem dedicated for Mokio that adds Skins functionality (including  the whole fron
 
 See http://www.mokio.org/support
 
-
 == Getting started with Mokio Skins
 
 Install Mokio first. See detailed instructions about at http://www.mokio.org/support#getting-started
@@ -33,13 +32,49 @@ c. Navigate to Skins → Add new skin
 
 d. Prepare skin packed with zip with the following structure:
 
-­[FOLDER] templates – main skin templates (currently available formats: erb, haml, slim)
+­[ZIP] skin_name
 
-­[FOLDER] js (javascripts for your skin)
+[FOLDER] skin_name
 
-­[FOLDER] css (css stylesheets for yous skin)
+­-[FOLDER] templates – main skin templates (currently available formats: erb, haml, slim)
 
-­[FOLDER] images (pictures, photos, graphics for your skins) (jpg,gif,png)
+­­--default.html.erb
+
+­­--layout.html.erb
+
+­­--home.html.erb
+
+­­--article.html.erb
+
+­­--pic_gallery.html.erb
+
+­­--mov_gallery.html.erb
+
+­­--contact.html.erb
+
+­­--list.html.erb
+
+­- [FOLDER] js (javascripts for your skin)
+
+­­--file.js
+
+­­--file2.js
+
+­- [FOLDER] css (css stylesheets for yous skin)
+
+­­--style.css
+
+­­--style2.css
+
+­- [FOLDER] images (pictures, photos, graphics for your skins) (jpg,gif,png)
+
+­­--img1.jpg
+
+­­--img2.png
+
+­­--img3.gif
+
+Requirements for the skin:
 
 • ZIP filename needs to be the same as skin name
 
@@ -67,9 +102,15 @@ To activate your skin, navigate to: Skins → Edit skin
 
 a. Change Active field to On (green)
 
+b. Save the skin
+
+== Edit skin
+
 To edit your skin, navigate to: Skins → Edit skin
 
 On the left there is a list of skin files available for edit.
+
+Useful shortcuts:
 
 • [ Ctrl R ] ­ display hints in editor
 
@@ -79,6 +120,6 @@ On the left there is a list of skin files available for edit.
 
 == Helpers available in editor [Ctrl R]
 
-­ Description of helper methods available in Mokio Skins editor can be found on
+­Description of helper methods available in Mokio Skins editor can be found on
 
 http://www.mokio.org/support#mokio-helpers
