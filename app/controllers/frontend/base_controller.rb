@@ -2,7 +2,7 @@ class Frontend::BaseController < ::ApplicationController
   
   layout :resolve_layout
 
-  before_action :set_objects, :only => [:show, :home]
+  before_action :set_objects
 
 
   def set_objects
