@@ -1,12 +1,11 @@
-class Frontend::ContentController < ::ApplicationController
-  layout :resolve_layout
+class Frontend::ContentController < Frontend::BaseController
 
   before_action :set_skin,       :only => [:show, :home, :single]
   before_action :set_skin_files, :only => [:show, :home, :single]
   before_action :set_menu,       :only => [:show, :single]
 
   def show
-    @contents = @menu.contents
+    @contents = @menu.contents.active
 
     if @contents.count == 1
       @content = @contents.first
@@ -16,51 +15,33 @@ class Frontend::ContentController < ::ApplicationController
     elsif @contents.count > 1
       set_meta(@menu)
       render :file => @skin_files.list.full_path
-
     else
       render :file => @skin_files.default.full_path
     end
   end
 
   def single
-    @content = Mokio::Content.find(params[:id])
-    set_meta(@content)
-    render_single
+    begin
+      @content = Mokio::Content.active.find(params[:id])
+      set_meta(@content)
+      render_single
+    rescue
+      #
+      # TODO: prepare 404 page
+      # np. render :template => "errors/404", :status => 404, :formats => [:html], layout: true
+      #
+      redirect_to root_path
+    end
   end
 
   def home
-    @contents = Mokio::Content.where(:home_page => true)
+    @contents = Mokio::Content.active.where(:home_page => true)
     @content = @contents.first
     set_meta(@content)
     render :file => @skin_files.home.full_path
   end
 
-  #
-  # Remove directory path "layout/" dependency
-  #
-  def _normalize_layout(value)
-    value
-  end
-
-
-  protected
-    def resolve_layout
-      @skin_files.layout.full_path
-    end
-
-
   private
-    def set_menu
-      @menu = Mokio::Menu.friendly.find(params[:menu_id])
-    end
-
-    def set_skin_files
-      @skin_files = @skin.skin_files
-    end
-
-    def set_skin
-      @skin = Mokio::Skin.active.first
-    end
 
     def render_single
       render :file => eval("@skin_files.#{@content.type.gsub(/Mokio::/, '').tableize.singularize}.full_path")

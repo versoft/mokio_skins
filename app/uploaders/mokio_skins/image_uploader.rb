@@ -13,7 +13,7 @@ module MokioSkins
     # Override the directory where uploaded files will be stored.
     # This is a sensible default for uploaders that are meant to be mounted:
     def store_dir
-      "skins/#{model.skin.name}/images"
+      "skins/#{model.skin.ver_name}/images"
     end
 
     def fullpath
@@ -49,19 +49,19 @@ module MokioSkins
     # Override the filename of the uploaded files:
     # Avoid using model.id or version_name here, see uploader/store.rb for details.
     def filename
-      return @filename if !@filename || !File.exist?("#{Rails.root}/public/skins/#{model.skin.name}/images/#{@filename}") 
+      return @filename if !@filename || !File.exist?("#{Rails.root}/public/skins/#{model.skin.ver_name}/images/#{@filename}") 
       
       name = @filename.gsub(/\.(.+)/, '')
       ext  = @filename.gsub(/.+\./, '')
       i    = 0
       new_filename = "#{name}-#{i}.#{ext}"
 
-      while File.exist?("#{Rails.root}/public/skins/#{model.skin.name}/images/#{new_filename}") do
+      while File.exist?("#{Rails.root}/public/skins/#{model.skin.ver_name}/images/#{new_filename}") do
         i += 1
         new_filename = "#{name}-#{i}.#{ext}"
       end
 
-      MOKIO_LOG.warn "[MokioSkins] [ImageUploader] Image with name '#{@filename}'' exists in skin '#{model.skin.name}', renaming it to '#{new_filename}'."
+      MOKIO_LOG.warn "[MokioSkins] [ImageUploader] Image with name '#{@filename}'' exists in skin '#{model.skin.ver_name}', renaming it to '#{new_filename}'."
 
       @filename = new_filename
     end

@@ -7,25 +7,29 @@
 - content_for :js do      
   javascript:
     $(document).ready(function () {
-      setTimeout(function() {
-        console.log("Re-enabling active buttons.");
-        $(".activebtn").off().bootstrapSwitch('destroy');
-        $(".activebtn").bootstrapSwitch(); 
-
-        function update_skin() {
-          $(".activebtn").on("switch-change", function(e, data) {
-            url = '/' + Mokio.engine_root() + "/skins/" + $(this).val() + "/update_active";
-
-            if ($(this).bootstrapSwitch('state') == true) {
-              $('.activebtn').unbind("switch-change").bootstrapSwitch('toggleRadioState');
-              $.post(url);
-              update_skin();
-            }
-            else {
-              $.post(url);        
-            }
-          });    
-        }
-        update_skin();
-      }, 500);
+    if (typeof obj_table != 'undefined' && obj_table == "skins")
+	  {
+    	  setTimeout(function() {
+    		  console.log("Re-enabling active buttons.");
+    		  $(".activebtn").off().bootstrapSwitch('destroy');
+    		  $(".activebtn").bootstrapSwitch();
+    		  
+    		  function update_skin() {
+    			  $(".activebtn").on("switch-change", function(e, data) {
+    				  url = '/' + Mokio.engine_root() + "/skins/" + $(this).val() + "/update_active";
+    				  if ($(this).bootstrapSwitch('state') == true) {
+    					  $('.activebtn').unbind("switch-change").bootstrapSwitch('toggleRadioState');
+    					  $.post(url);
+    					  console.log("WYSYLAM: " + url);
+    					  update_skin();
+    				  }
+    				  else {
+    					  console.log("Re-enabling active: " + url);
+    					  $.post(url);        
+    				  }
+    			  });    
+    		  }
+    		  update_skin();
+    	  }, 500);
+	  }
     });

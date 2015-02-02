@@ -55,7 +55,7 @@ module Mokio
     #
     # const
     #
-    STD_FILES = %w(default layout home article pic_gallery mov_gallery contact list)
+    STD_FILES = %w(default layout home article pic_gallery mov_gallery contact list contact_success contact_error)
 
     #
     # class methods
@@ -197,18 +197,18 @@ module Mokio
 
       def move_templates
         return unless self.type == "html"
-        view_dir = "#{Rails.root}/app/views/templates/#{self.skin.name}"
+        view_dir = "#{Rails.root}/app/views/templates/#{self.skin.ver_name}"
 
         unless File.directory?(view_dir)
           FileUtils.mkdir_p(view_dir)
-          MOKIO_LOG.debug "[MokioSkins] [SkinFile] Creating directory /app/views/#{self.skin.name}."
+          MOKIO_LOG.debug "[MokioSkins] [SkinFile] Creating directory /app/views/#{self.skin.ver_name}."
         end
 
         view_dir += "/templates"
 
         unless File.directory?(view_dir)
           FileUtils.mkdir_p(view_dir)
-          MOKIO_LOG.debug "[MokioSkins] [SkinFile] Creating directory /app/views/#{self.skin.name}/templates."
+          MOKIO_LOG.debug "[MokioSkins] [SkinFile] Creating directory /app/views/#{self.skin.ver_name}/templates."
         end
         FileUtils.mv self.full_path, view_dir
 
@@ -220,7 +220,7 @@ module Mokio
         MOKIO_LOG.debug "[MokioSkins] [SkinFile] Checking uniqueness of skin file name: #{self.name}."
         self.skin.skin_files.each do |file|
           if self.name == file.name
-            errors.add(:name, :already_exists, :skin => self.skin.name, :name => self.name)
+            errors.add(:name, :already_exists, :skin => self.skin.ver_name, :name => self.name)
             return false
           end
         end

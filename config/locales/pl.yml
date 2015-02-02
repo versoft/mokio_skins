@@ -1,6 +1,7 @@
 pl:
   backend:
     breadcrumbs:
+      older_versions: "Starsze wersje skórki"
       skins: Skórki
       skins_new: Nowa skórka
       skins_edit: Edycja skórki
@@ -9,6 +10,10 @@ pl:
       skins: Skórki
 
   skins:
+    new_version_help: "Jeśli chcesz utworzyć nową wersję skórki, nazwa skórki / nazwa pliku zip musi być zgodna ze wzorcem: moja_skórka-{wersja} / moja_skórka-{wersja}.zip (np. moja_skórka-2 / moja_skórka-2.zip)"
+    deleted: "Skórka została usunięta."
+    updated: "Skórka została zaktualizowana"
+    created: "Skórka została utworzona"
     index_title: Skórki
     index_add_new: Dodaj nową skórkę
     edit_title: Edycja skórki
@@ -21,19 +26,14 @@ pl:
     correct_structure: "Poprawna struktura pliku zip:"
     skin_name: Nazwa skórki
     requirements: "Wymagania:"
+    version: "Wersja"
 
+    older_versions: "Starsze wersje"
     zip_name_skin_name: Nazwa pliku zip musi się zgadzać z nazwą zawartej skórki
     uniq_name: Nazwa skórki musi być unikalna
     only_css_html: "Aktualnie wspierane formaty styli: <b>.css</b>"
     only_js_html: "Aktualnie wspierane formaty skryptów: <b>.js</b>"
     image_format_html: "Zdjęcia powinny być w formacie: <b>.jpg .gif .png</b>"
-    updated: "Skórka została pomyślnie zapisana"
-    deleted: "Skórka została skasowana"
-    created: "Skórka została utworzona"
-    not_updated: "Wystąpiły problemy przy zapisie skórki"
-    not_deleted: "Wystąpiły problemy przy kasowaniu skórki"
-    not_created: "Wystąpiły problemy przy tworzeniu skórki"
-
 
   skin_files:
     name: Nazwa
@@ -61,6 +61,9 @@ pl:
     unsaved_changes: "Aktualnie otwarty plik ma niezapisane zmiany, czy napewno chcesz kontynuawać?"
     alert_before_delete: Czy napewno chcesz usunąć ten plik?
     better_dont_delete_next_time: "Patrz gamoniu co kasujesz, nie ma przywracania zdjęć"
+
+  contact_mailer:
+    mail_subject: "Formularz kontaktowy"
 
   activerecord:
     attributes:

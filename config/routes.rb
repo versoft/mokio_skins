@@ -1,9 +1,16 @@
 Mokio::Engine.routes.draw do
-	resources :skins do
+  resources :skins do
+     member do
+       post :update_active
+       get :older_versions
+     end
+  end
+  
+  resources :static_modules do
      member do
        post :update_active
      end
-	end
+  end
 
   resources :skin_files do
     member do
@@ -18,8 +25,11 @@ end
 
 Rails.application.routes.draw do
   scope :module => "frontend", :constraints => FrontendConstraint do
+    root to: "content#home"
+    namespace :contacts do
+      get :mail
+    end
     get ':menu_id' => "content#show"
     get ':menu_id/:id' => "content#single"
-    root to: "content#home"
   end
 end
