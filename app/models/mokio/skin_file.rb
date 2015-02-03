@@ -56,14 +56,14 @@ module Mokio
     # const
     #
     STD_FILES = %w(default layout home article pic_gallery mov_gallery contact list contact_success contact_error)
-
+    #
     #
     # class methods
     #
     class << self
       STD_FILES.each do |file_type|
         define_method file_type do
-          self.all.each {|file| return file if file.name =~ /#{file_type}/ }
+          self.all.each {|file| return file if file.name.split(".").first == file_type }
         end
       end
 
