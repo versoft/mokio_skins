@@ -63,7 +63,7 @@ module Mokio
     class << self
       STD_FILES.each do |file_type|
         define_method file_type do
-          self.all.each {|file| return file if file.name.split(".").first == file_type && self.template?}
+          self.all.each {|file| return file if file.name.split(".").first == file_type && file.template?}
         end
       end
 
