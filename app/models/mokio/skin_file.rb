@@ -63,7 +63,7 @@ module Mokio
     class << self
       STD_FILES.each do |file_type|
         define_method file_type do
-          self.all.each {|file| return file if file.name.split(".").first == file_type }
+          self.all.each {|file| return file if file.name.split(".").first == file_type && self.template?}
         end
       end
 
@@ -220,7 +220,8 @@ module Mokio
         MOKIO_LOG.debug "[MokioSkins] [SkinFile] Checking uniqueness of skin file name: #{self.name}."
         self.skin.skin_files.each do |file|
           if self.name == file.name
-            errors.add(:name, :already_exists, :skin => self.skin.ver_name, :name => self.name)
+            MOKIO_LOG.error "[MokioSkins] [SkinFile] Error!: #{self.name} already exists!".red    
+            self.skin.errors.add(:name, :already_exists, :skin => self.skin.ver_name, :name => self.name)
             return false
           end
         end
