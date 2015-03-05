@@ -221,7 +221,7 @@ module Mokio
         self.skin.skin_files.each do |file|
           if self.name == file.name
             MOKIO_LOG.error "[MokioSkins] [SkinFile] Error!: #{self.name} already exists!".red    
-            self.skin.errors.add(:name, :already_exists, :skin => self.skin.ver_name, :name => self.name)
+            self.errors.add(:name, :already_exists, :skin => self.skin.ver_name, :name => self.name)
             return false
           end
         end
