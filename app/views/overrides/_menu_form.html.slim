@@ -1,1 +1,1 @@
-= f.input :skin_file_id, collection: Mokio::SkinFile.templates.collect{|f| [f.name, f.id]},  include_blank: true, label: t('menus.skin_file'), disabled: !@menu.display_editable_field?('skin_template')
+= f.input :skin_file_id, collection: (Mokio::Skin.active.first.present? ? Mokio::Skin.active.first.skin_files.templates.collect{|f| [f.name, f.id]} : []),  include_blank: true, label: t('menus.skin_file'), disabled: !@menu.display_editable_field?('skin_file')
