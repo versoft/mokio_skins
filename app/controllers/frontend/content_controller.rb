@@ -6,8 +6,9 @@ class Frontend::ContentController < Frontend::BaseController
 
   def show
     @contents = @menu.contents.active
-
-    if @contents.count == 1
+    if @menu.skin_file.present?
+      render :file => "#{Rails.root}#{@menu.skin_file.path}"
+    elsif @contents.count == 1
       @content = @contents.first
       set_meta(@content)
       render_single

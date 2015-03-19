@@ -7,3 +7,9 @@
   original_view: "mokio/layout/sidebar"
   override_path: "overrides/sidebar"
   html_element_id: "#sidebar-ul"
+-
+  original_view: "mokio/menus/form"
+  override_path: "overrides/menu_form"
+  html_element_id: ".menu_lang_id"
+  type: "css"
+  position: "after"

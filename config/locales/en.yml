@@ -8,7 +8,8 @@ en:
 
     sidebars:
       skins: Skins
-
+  menus:
+    skin_file: Skin template
   skins:
     new_version_help: "If you want to create a new version of the skin, the skin name / zip file name must match the pattern: my_skin-{version} / my_skin-{version}.zip (eg. my_skin-2 / my_skin-2.zip)"
     deleted: "Skin has been deleted"

@@ -8,7 +8,8 @@ pl:
 
     sidebars:
       skins: Skórki
-
+  menus:
+    skin_file: Szablon skórki
   skins:
     new_version_help: "Jeśli chcesz utworzyć nową wersję skórki, nazwa skórki / nazwa pliku zip musi być zgodna ze wzorcem: moja_skórka-{wersja} / moja_skórka-{wersja}.zip (np. moja_skórka-2 / moja_skórka-2.zip)"
     deleted: "Skórka została usunięta."
