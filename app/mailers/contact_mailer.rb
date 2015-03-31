@@ -1,5 +1,4 @@
 class ContactMailer < ActionMailer::Base
-  default :from => "<no-reply@mokio.org>"
   def msg(obj, recipients)
     @message = obj.template
     @message.gsub!("%name%", obj.name)

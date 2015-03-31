@@ -2,10 +2,15 @@ class Frontend::ContactsController < Frontend::BaseController
 
   before_action :set_skin,       :only => [:mail]
   before_action :set_skin_files, :only => [:mail]
-  
+  before_action :set_mailer_from
+
+  def set_mailer_from
+    ActionMailer::Base.default :from => "no-reply@#{request.domain}"
+  end
+
   def mail
     mailer = Mokio::Mailer.new(mailer_params)
-    # raise params.inspect
+    
     if mailer.valid?
       menu = Mokio::Menu.friendly.find("contact")
       content  = menu.contents.active.first
