@@ -31,5 +31,6 @@ Rails.application.routes.draw do
     end
     get ':menu_id' => "content#show"
     get ':menu_id/:id' => "content#single"
+    get ':menu_id/:id/:slug' => "content#single"
   end
 end

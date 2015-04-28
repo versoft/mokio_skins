@@ -9,3 +9,5 @@
   1. Set default mailer :from based on request.domain
 ### v0.0.8
   1. Fix search menu with the contact page when sending mail (still not ideal...)
+### v0.0.9 
+  1. Add route with slug
