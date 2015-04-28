@@ -12,8 +12,8 @@ class Frontend::ContactsController < Frontend::BaseController
     mailer = Mokio::Mailer.new(mailer_params)
     
     if mailer.valid?
-      menu = Mokio::Menu.friendly.find("contact")
-      content  = menu.contents.active.first
+      content  = Mokio::Contact.first
+      menu = content.menus.first
 
       mailer.template = content.contact_template.tpl
 

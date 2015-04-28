@@ -7,3 +7,5 @@
   1. Possibility to assign skin template to menu
 ### v0.0.7
   1. Set default mailer :from based on request.domain
+### v0.0.8
+  1. Fix search menu with the contact page when sending mail (still not ideal...)
