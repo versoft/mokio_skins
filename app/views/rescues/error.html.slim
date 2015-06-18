@@ -20,5 +20,5 @@ header
                 - i = 0
                 - @src.split("\n").each do |l|
                   - i += 1
-                  div class="line #{'active' if i == 4}"
+                  div class="line #{'active' if l.split(":")[0] == @line}"
                     = l.split(":")[1]
