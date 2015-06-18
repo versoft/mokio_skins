@@ -11,3 +11,5 @@
   1. Fix search menu with the contact page when sending mail (still not ideal...)
 ### v0.0.9 
   1. Add route with slug
+### v0.0.10
+  1. Show template error info in production if user is signed in instead of standard 500 error page.

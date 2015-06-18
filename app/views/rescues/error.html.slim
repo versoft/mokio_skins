@@ -1,0 +1,24 @@
+header
+  h1 = Error
+#container
+  h2 = "Error in file <strong>#{@tpl}</strong>, line: #{@line}".html_safe
+  pre
+    code = "Message: #{@msg}" 
+  div class="source"
+    .info
+      p = "Extracted source "
+    .data
+      table.lines cellpadding=0 cellspacing=0
+        tbody
+          tr
+            td
+              pre class="line_numbers"
+                - @src.split("\n").each do |l|
+                  span = l.split(":")[0] + "\n"
+            td width="100%"
+              pre
+                - i = 0
+                - @src.split("\n").each do |l|
+                  - i += 1
+                  div class="line #{'active' if i == 4}"
+                    = l.split(":")[1]
