@@ -13,3 +13,5 @@
   1. Add route with slug
 ### v0.0.10
   1. Show template error info in production if user is signed in instead of standard 500 error page.
+### v0.0.11
+  1. CKEditor routing fix
