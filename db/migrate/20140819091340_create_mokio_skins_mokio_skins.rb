@@ -1,4 +1,4 @@
-class CreateMokioSkinsMokioSkins < ActiveRecord::Migration
+class CreateMokioSkinsMokioSkins < ActiveRecord::Migration[6.0]
   def change
     create_table :mokio_skins do |t|
       t.string :name
